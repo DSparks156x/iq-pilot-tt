@@ -240,6 +240,7 @@ class WMI(StrEnum):
   SEAT = "VSS"
   AUDI_EUROPE_MPV = "WA1"
   AUDI_GERMANY_CAR = "WAU"
+  AUDI_HUNGARY = "TRU"
   MAN = "WMA"
   PORSCHE_SUV = "WP1"
   AUDI_SPORT = "WUA"
@@ -385,6 +386,13 @@ class VWCarDocs(CarDocs):
 
 class CAR(Platforms):
   config: VolkswagenMQBPlatformConfig | VolkswagenPQPlatformConfig | VolkswagenMLBPlatformConfig | VolkswagenMEBPlatformConfig | VolkswagenMQBevoPlatformConfig
+
+  AUDI_TT_MK2 = VolkswagenPQPlatformConfig(
+    [VWCarDocs("Audi TT 2008-14")],
+    VolkswagenCarSpecs(mass=1469, wheelbase=2.468, steerRatio=16.9),
+    chassis_codes={"8J", "FK"},
+    wmis={WMI.AUDI_HUNGARY, WMI.AUDI_GERMANY_CAR},
+  )
 
   VOLKSWAGEN_ARTEON_MK1 = VolkswagenMQBPlatformConfig(
     [

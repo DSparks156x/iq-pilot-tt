@@ -8,6 +8,14 @@ Ecu = CarParams.Ecu
 
 
 FW_VERSIONS = {
+  CAR.AUDI_TT_MK2: {
+    (Ecu.engine, 0x7e0, None): [
+      b'\xf1\x878J0907115AE\xf1\x890020',
+    ],
+    (Ecu.srs, 0x715, None): [
+      b'\xf1\x878J0959655  \xf1\x890020',
+    ],
+  },
   CAR.VOLKSWAGEN_ARTEON_MK1: {
     (Ecu.engine, 0x7e0, None): [
       b'\xf1\x8704L906026TM\xf1\x896847',
