@@ -133,6 +133,8 @@ class CarInterface(CarInterfaceBase):
       ret.longitudinalTuning.kiV = [.69]
       ret.longitudinalActuatorDelay = 0.6
       CarInterfaceBase.configure_torque_tune(candidate, ret.lateralTuning)
+      if ret.flags & VolkswagenFlags.NO_EXT_CAN:
+        safety_configs[0].safetyParam |= VolkswagenSafetyFlags.NO_EXT_CAN.value
     elif ret.flags & VolkswagenFlags.MLB:
       ret.steerActuatorDelay = 0.2
       CarInterfaceBase.configure_torque_tune(candidate, ret.lateralTuning)

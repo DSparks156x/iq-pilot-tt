@@ -22,12 +22,16 @@ class CanBus(CanBusBase):
     super().__init__(CP, fingerprint)
 
     self._ext = self.offset
+    self.no_ext_can = False
     if CP is not None:
       self._ext = self.offset + 2 if CP.networkLocation == NetworkLocation.gateway else self.offset
+      self.no_ext_can = bool(CP.flags & VolkswagenFlags.NO_EXT_CAN)
 
   @property
   def pt(self) -> int:
     # ADAS / Extended CAN, gateway side of the relay
+    if self.no_ext_can:
+      return self.offset + 1
     return self.offset
 
   @property
@@ -48,6 +52,8 @@ class CanBus(CanBusBase):
   @property
   def ext(self) -> int:
     # ADAS / Extended CAN, side of the relay with the ACC radar
+    if self.no_ext_can:
+      return self.offset + 1
     return self._ext
 
 
@@ -254,6 +260,7 @@ class VolkswagenSafetyFlags(IntFlag):
   ALT_CRC_VARIANT_1 = 2
   NO_GAS_OFFSET = 4
   ALLOW_LONG_ACCEL_WITH_GAS_PRESSED = 8
+  NO_EXT_CAN = 16
 
 
 class VolkswagenFlags(IntFlag):
@@ -274,6 +281,7 @@ class VolkswagenFlags(IntFlag):
   STOCK_PSD_06_PRESENT = 8192
   STOCK_DIAGNOSE_01_PRESENT = 16384
   ALT_GEAR = 32768
+  NO_EXT_CAN = 65536
 
 
 class VolkswagenFlagsIQ(IntFlag):
@@ -385,6 +393,7 @@ class CAR(Platforms):
     VolkswagenCarSpecs(mass=1469, wheelbase=2.468, steerRatio=16.9),
     chassis_codes={"8J", "FK"},
     wmis={WMI.AUDI_HUNGARY, WMI.AUDI_GERMANY_CAR},
+    flags=VolkswagenFlags.NO_EXT_CAN,
   )
 
   VOLKSWAGEN_ARTEON_MK1 = VolkswagenMQBPlatformConfig(

@@ -66,20 +66,46 @@ static safety_config volkswagen_pq_init(uint16_t param) {
     {.msg = {{MSG_GRA_NEU, 0, 4, 30U, .max_counter = 15U, .ignore_quality_flag = true}, { 0 }, { 0 }}},
   };
 
+  static RxCheck volkswagen_pq_no_ext_rx_checks[] = {
+    {.msg = {{MSG_LENKHILFE_3, 1, 6, 100U, .max_counter = 15U, .ignore_quality_flag = true}, { 0 }, { 0 }}},
+    {.msg = {{MSG_BREMSE_1, 1, 8, 100U, .ignore_checksum = true, .ignore_counter = true, .ignore_quality_flag = true}, { 0 }, { 0 }}},
+    {.msg = {{MSG_MOTOR_2, 1, 8, 50U, .ignore_checksum = true, .ignore_counter = true, .ignore_quality_flag = true}, { 0 }, { 0 }}},
+    {.msg = {{MSG_MOTOR_3, 1, 8, 100U, .ignore_checksum = true, .ignore_counter = true, .ignore_quality_flag = true}, { 0 }, { 0 }}},
+    {.msg = {{MSG_MOTOR_5, 1, 8, 50U, .ignore_counter = true, .ignore_quality_flag = true}, { 0 }, { 0 }}},
+    {.msg = {{MSG_GRA_NEU, 1, 4, 30U, .max_counter = 15U, .ignore_quality_flag = true}, { 0 }, { 0 }}},
+  };
+
+  static const CanMsg VOLKSWAGEN_PQ_NO_EXT_STOCK_TX_MSGS[] = {{MSG_HCA_1, 1, 5, .check_relay = true}, {MSG_LDW_1, 1, 8, .check_relay = true},
+                                                       {MSG_GRA_NEU, 1, 4, .check_relay = false}, {MSG_BLINKMODI_02, 1, 8, .check_relay = false}};
+
+  static const CanMsg VOLKSWAGEN_PQ_NO_EXT_LONG_TX_MSGS[] = {{MSG_HCA_1, 1, 5, .check_relay = true}, {MSG_LDW_1, 1, 8, .check_relay = true},
+                                                      {MSG_ACC_SYSTEM, 1, 8, .check_relay = true}, {MSG_ACC_GRA_ANZEIGE, 1, 8, .check_relay = true},
+                                                      {MSG_BLINKMODI_02, 1, 8, .check_relay = false}, {MSG_MOTOR_2, 1, 8, .check_relay = true}};
+
   volkswagen_common_init();
 
+  volkswagen_no_ext_can = GET_FLAG(param, FLAG_VOLKSWAGEN_NO_EXT_CAN);
 #ifdef ALLOW_DEBUG
   volkswagen_longitudinal = GET_FLAG(param, FLAG_VOLKSWAGEN_LONG_CONTROL);
   volkswagen_allow_long_accel_with_gas_pressed = GET_FLAG(param, FLAG_VOLKSWAGEN_ALLOW_LONG_ACCEL_WITH_GAS_PRESSED);
 #else
   SAFETY_UNUSED(param);
 #endif
-  return volkswagen_longitudinal ? BUILD_SAFETY_CFG(volkswagen_pq_rx_checks, VOLKSWAGEN_PQ_LONG_TX_MSGS) : \
-                                   BUILD_SAFETY_CFG(volkswagen_pq_rx_checks, VOLKSWAGEN_PQ_STOCK_TX_MSGS);
+
+  safety_config ret;
+  if (volkswagen_no_ext_can) {
+    ret = volkswagen_longitudinal ? BUILD_SAFETY_CFG(volkswagen_pq_no_ext_rx_checks, VOLKSWAGEN_PQ_NO_EXT_LONG_TX_MSGS) : \
+                                    BUILD_SAFETY_CFG(volkswagen_pq_no_ext_rx_checks, VOLKSWAGEN_PQ_NO_EXT_STOCK_TX_MSGS);
+  } else {
+    ret = volkswagen_longitudinal ? BUILD_SAFETY_CFG(volkswagen_pq_rx_checks, VOLKSWAGEN_PQ_LONG_TX_MSGS) : \
+                                    BUILD_SAFETY_CFG(volkswagen_pq_rx_checks, VOLKSWAGEN_PQ_STOCK_TX_MSGS);
+  }
+  return ret;
 }
 
 static void volkswagen_pq_rx_hook(const CANPacket_t *msg) {
-  if (msg->bus == 0U) {
+  uint8_t pt_bus = volkswagen_no_ext_can ? 1U : 0U;
+  if (msg->bus == pt_bus) {
     // Update in-motion state from speed value.
     // Signal: Bremse_1.BR1_Rad_kmh
     if (msg->addr == MSG_BREMSE_1) {

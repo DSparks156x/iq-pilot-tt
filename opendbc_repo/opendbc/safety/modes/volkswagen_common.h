@@ -8,6 +8,8 @@ extern const uint16_t FLAG_VOLKSWAGEN_NO_GAS_OFFSET;
 const uint16_t FLAG_VOLKSWAGEN_NO_GAS_OFFSET = 4;
 extern const uint16_t FLAG_VOLKSWAGEN_ALLOW_LONG_ACCEL_WITH_GAS_PRESSED;
 const uint16_t FLAG_VOLKSWAGEN_ALLOW_LONG_ACCEL_WITH_GAS_PRESSED = 8;
+extern const uint16_t FLAG_VOLKSWAGEN_NO_EXT_CAN;
+const uint16_t FLAG_VOLKSWAGEN_NO_EXT_CAN = 16;
 
 static uint8_t volkswagen_crc8_lut_8h2f[256]; // Static lookup table for CRC8 poly 0x2F, aka 8H2F/AUTOSAR
 
@@ -22,6 +24,9 @@ bool volkswagen_no_gas_offset = false;
 
 extern bool volkswagen_allow_long_accel_with_gas_pressed;
 bool volkswagen_allow_long_accel_with_gas_pressed = false;
+
+extern bool volkswagen_no_ext_can;
+bool volkswagen_no_ext_can = false;
 
 extern bool volkswagen_set_button_prev;
 bool volkswagen_set_button_prev = false;
@@ -62,7 +67,7 @@ static void volkswagen_common_init(void) {
   volkswagen_brake_pressure_detected = false;
   volkswagen_alt_crc_variant_1 = false;
   volkswagen_no_gas_offset = false;
-  volkswagen_allow_long_accel_with_gas_pressed = false;
+  volkswagen_no_ext_can = false;
   gen_crc_lookup_table_8(0x2F, volkswagen_crc8_lut_8h2f);
   return;
 }
