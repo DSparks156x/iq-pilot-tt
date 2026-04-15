@@ -390,12 +390,11 @@ class CAR(Platforms):
 
   AUDI_TT_MK2 = VolkswagenPQPlatformConfig(
     [VWCarDocs("Audi TT 2008-14")],
-    VolkswagenCarSpecs(mass=1469, wheelbase=2.468, steerRatio=16.9),
+    VolkswagenCarSpecs(mass=1469, wheelbase=2.468, steerRatio=16.9, minSteerSpeed=20 * CV.KPH_TO_MS),
     chassis_codes={"8J", "FK"},
     wmis={WMI.AUDI_HUNGARY, WMI.AUDI_GERMANY_CAR},
-    flags=VolkswagenFlags.NO_EXT_CAN,
+    flags=VolkswagenFlags.NO_EXT_CAN | VolkswagenFlagsIQ.IQ_CC_ONLY_NO_RADAR,
   )
-
   VOLKSWAGEN_ARTEON_MK1 = VolkswagenMQBPlatformConfig(
     [
       VWCarDocs("Volkswagen Arteon 2018-23", video="https://youtu.be/FAomFKPFlDA"),
