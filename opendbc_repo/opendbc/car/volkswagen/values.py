@@ -28,28 +28,23 @@ class CanBus(CanBusBase):
 
   @property
   def pt(self) -> int:
-    # ADAS / Extended CAN, gateway side of the relay
-    return self.offset
+    return 1
 
   @property
   def aux(self) -> int:
-    # NetworkLocation.fwdCamera: radar-camera object fusion CAN
-    # NetworkLocation.gateway: powertrain CAN
-    return self.offset + 1
+    return 1
 
   @property
   def main(self) -> int:
-    return self.offset + 1
+    return 1
 
   @property
   def cam(self) -> int:
-    # ADAS / Extended CAN, camera side of the relay
-    return self.offset + 2
+    return 1
 
   @property
   def ext(self) -> int:
-    # ADAS / Extended CAN, side of the relay with the ACC radar
-    return self._ext
+    return 1
 
 
 class CarControllerParams:
@@ -389,7 +384,7 @@ class CAR(Platforms):
 
   AUDI_TT_MK2 = VolkswagenPQPlatformConfig(
     [VWCarDocs("Audi TT 2008-14")],
-    VolkswagenCarSpecs(mass=1469, wheelbase=2.468, steerRatio=16.9),
+    VolkswagenCarSpecs(mass=1469, wheelbase=2.468, steerRatio=16.9, minSteerSpeed=20 * CV.KPH_TO_MS),
     chassis_codes={"8J", "FK"},
     wmis={WMI.AUDI_HUNGARY, WMI.AUDI_GERMANY_CAR},
   )
