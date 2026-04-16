@@ -49,21 +49,21 @@ static uint32_t volkswagen_pq_compute_checksum(const CANPacket_t *msg) {
 
 static safety_config volkswagen_pq_init(uint16_t param) {
   // Transmit of GRA_Neu is allowed on bus 0/1/2 for compatibility across camera and gateway integrations
-  static const CanMsg VOLKSWAGEN_PQ_STOCK_TX_MSGS[] = {{MSG_HCA_1, 0, 5, .check_relay = true}, {MSG_LDW_1, 0, 8, .check_relay = true},
+  static const CanMsg VOLKSWAGEN_PQ_STOCK_TX_MSGS[] = {{MSG_HCA_1, 1, 5, .check_relay = true}, {MSG_LDW_1, 1, 8, .check_relay = true},
                                                 {MSG_GRA_NEU, 0, 4, .check_relay = false}, {MSG_GRA_NEU, 1, 4, .check_relay = false},
-                                                {MSG_GRA_NEU, 2, 4, .check_relay = false}, {MSG_BLINKMODI_02, 0, 8, .check_relay = false}};
+                                                {MSG_GRA_NEU, 2, 4, .check_relay = false}, {MSG_BLINKMODI_02, 1, 8, .check_relay = false}};
 
-  static const CanMsg VOLKSWAGEN_PQ_LONG_TX_MSGS[] =  {{MSG_HCA_1, 0, 5, .check_relay = true}, {MSG_LDW_1, 0, 8, .check_relay = true},
-                                                {MSG_ACC_SYSTEM, 0, 8, .check_relay = true}, {MSG_ACC_GRA_ANZEIGE, 0, 8, .check_relay = true},
-                                                {MSG_BLINKMODI_02, 0, 8, .check_relay = false}, {MSG_MOTOR_2, 2, 8, .check_relay = true}};
+  static const CanMsg VOLKSWAGEN_PQ_LONG_TX_MSGS[] =  {{MSG_HCA_1, 1, 5, .check_relay = true}, {MSG_LDW_1, 1, 8, .check_relay = true},
+                                                {MSG_ACC_SYSTEM, 1, 8, .check_relay = true}, {MSG_ACC_GRA_ANZEIGE, 1, 8, .check_relay = true},
+                                                {MSG_BLINKMODI_02, 1, 8, .check_relay = false}, {MSG_MOTOR_2, 1, 8, .check_relay = true}};
 
   static RxCheck volkswagen_pq_rx_checks[] = {
-    {.msg = {{MSG_LENKHILFE_3, 0, 6, 100U, .max_counter = 15U, .ignore_quality_flag = true}, { 0 }, { 0 }}},
-    {.msg = {{MSG_BREMSE_1, 0, 8, 100U, .ignore_checksum = true, .ignore_counter = true, .ignore_quality_flag = true}, { 0 }, { 0 }}},
-    {.msg = {{MSG_MOTOR_2, 0, 8, 50U, .ignore_checksum = true, .ignore_counter = true, .ignore_quality_flag = true}, { 0 }, { 0 }}},
-    {.msg = {{MSG_MOTOR_3, 0, 8, 100U, .ignore_checksum = true, .ignore_counter = true, .ignore_quality_flag = true}, { 0 }, { 0 }}},
-    {.msg = {{MSG_MOTOR_5, 0, 8, 50U, .ignore_counter = true, .ignore_quality_flag = true}, { 0 }, { 0 }}},
-    {.msg = {{MSG_GRA_NEU, 0, 4, 30U, .max_counter = 15U, .ignore_quality_flag = true}, { 0 }, { 0 }}},
+    {.msg = {{MSG_LENKHILFE_3, 1, 6, 100U, .max_counter = 15U, .ignore_quality_flag = true}, { 0 }, { 0 }}},
+    {.msg = {{MSG_BREMSE_1, 1, 8, 100U, .ignore_checksum = true, .ignore_counter = true, .ignore_quality_flag = true}, { 0 }, { 0 }}},
+    {.msg = {{MSG_MOTOR_2, 1, 8, 50U, .ignore_checksum = true, .ignore_counter = true, .ignore_quality_flag = true}, { 0 }, { 0 }}},
+    {.msg = {{MSG_MOTOR_3, 1, 8, 100U, .ignore_checksum = true, .ignore_counter = true, .ignore_quality_flag = true}, { 0 }, { 0 }}},
+    {.msg = {{MSG_MOTOR_5, 1, 8, 50U, .ignore_counter = true, .ignore_quality_flag = true}, { 0 }, { 0 }}},
+    {.msg = {{MSG_GRA_NEU, 1, 4, 30U, .max_counter = 15U, .ignore_quality_flag = true}, { 0 }, { 0 }}},
   };
 
   volkswagen_common_init();
@@ -79,7 +79,7 @@ static safety_config volkswagen_pq_init(uint16_t param) {
 }
 
 static void volkswagen_pq_rx_hook(const CANPacket_t *msg) {
-  if (msg->bus == 0U) {
+  if (msg->bus == 1U) {
     // Update in-motion state from speed value.
     // Signal: Bremse_1.BR1_Rad_kmh
     if (msg->addr == MSG_BREMSE_1) {
