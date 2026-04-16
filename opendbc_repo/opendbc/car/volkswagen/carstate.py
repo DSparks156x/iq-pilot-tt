@@ -493,7 +493,10 @@ class CarState(CarStateBase):
       cruise_faulted = pt_cp.vl["Motor_2"]["MO2_Sta_GRA"] == 3
 
     ret.accFaulted = cruise_faulted
-    ret.cruiseState.available = (cruise_main_switch or cruise_tsk_status) and not cruise_faulted
+    if self.CP.flags & VolkswagenFlagsIQ.IQ_CC_ONLY_NO_RADAR:
+      ret.cruiseState.available = cruise_main_switch and not cruise_faulted
+    else:
+      ret.cruiseState.available = (cruise_main_switch or cruise_tsk_status) and not cruise_faulted
 
     allow_lat_only = self._params.get_bool("AllowLateralWhenLongUnavailable")
     cruise_main_available = cruise_main_switch or cruise_tsk_status
