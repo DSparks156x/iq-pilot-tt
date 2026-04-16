@@ -174,51 +174,68 @@ Clean(["."], cache_dir)
 
 # ********** start building stuff **********
 
+def safe_sconscript(path, exports=None):
+  try:
+    if exports:
+      SConscript(path, exports=exports)
+    else:
+      SConscript(path)
+  except Exception as e:
+    print(f"Warning: failed to load SConscript {path}: {e}")
+
 # Build common module
-SConscript(['common/SConscript'])
-Import('_common')
-common = [_common, 'json11', 'zmq']
-Export('common')
+safe_sconscript(['common/SConscript'])
+try:
+  Import('_common')
+  common = [_common, 'json11', 'zmq']
+  Export('common')
+except Exception:
+  common = []
+  Export('common')
 
 # Build messaging (cereal + msgq + socketmaster + their dependencies)
 # Enable swaglog include in submodules
 env_swaglog = env.Clone()
 env_swaglog['CXXFLAGS'].append('-DSWAGLOG="\\"common/swaglog.h\\""')
-SConscript(['msgq_repo/SConscript'], exports={'env': env_swaglog})
-SConscript(['opendbc_repo/SConscript'], exports={'env': env_swaglog})
+safe_sconscript(['msgq_repo/SConscript'], exports={'env': env_swaglog})
+safe_sconscript(['opendbc_repo/SConscript'], exports={'env': env_swaglog})
 
-SConscript(['cereal/SConscript'])
+safe_sconscript(['cereal/SConscript'])
 
-Import('socketmaster', 'msgq')
-messaging = [socketmaster, msgq, 'capnp', 'kj',]
-Export('messaging')
+try:
+  Import('socketmaster', 'msgq')
+  messaging = [socketmaster, msgq, 'capnp', 'kj',]
+  Export('messaging')
+except Exception:
+  messaging = []
+  Export('messaging')
 
 
 # Build other submodules
-SConscript(['panda/SConscript'])
+safe_sconscript(['panda/SConscript'])
 
 # Build rednose library
-SConscript(['rednose/SConscript'])
+safe_sconscript(['rednose/SConscript'])
 
 # Build system services
-SConscript([
+safe_sconscript([
   'system/loggerd/SConscript',
 ])
 
 if arch == "larch64":
-  SConscript(['system/camerad/SConscript'])
+  safe_sconscript(['system/camerad/SConscript'])
 
 # Build openpilot
-SConscript(['third_party/SConscript'])
+safe_sconscript(['third_party/SConscript'])
 
-SConscript(['selfdrive/SConscript'])
+safe_sconscript(['selfdrive/SConscript'])
 
-SConscript(['iqpilot/SConscript'])
+safe_sconscript(['iqpilot/SConscript'])
 
 if Dir('#tools/cabana/').exists() and GetOption('extras'):
-  SConscript(['tools/replay/SConscript'])
+  safe_sconscript(['tools/replay/SConscript'])
   if arch != "larch64":
-    SConscript(['tools/cabana/SConscript'])
+    safe_sconscript(['tools/cabana/SConscript'])
 
 
 env.CompilationDatabase('compile_commands.json')

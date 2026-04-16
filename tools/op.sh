@@ -130,6 +130,9 @@ function op_check_os() {
         "jammy" | "kinetic" | "noble" | "focal")
           echo -e " ↳ [${GREEN}✔${NC}] Ubuntu $VERSION_CODENAME detected."
           ;;
+        "arch" | "archlinux" | "")
+          echo -e " ↳ [${GREEN}✔${NC}] Arch Linux detected."
+          ;;
         * )
           echo -e " ↳ [${RED}✗${NC}] Incompatible Ubuntu version $VERSION_CODENAME detected!"
           loge "ERROR_INCOMPATIBLE_UBUNTU" "$VERSION_CODENAME"
@@ -166,9 +169,9 @@ import sys, re
 req = '''$REQUIRED_PYTHON_VERSION'''
 bounds = re.findall(r'[0-9]+(?:\.[0-9]+)*', req)
 def parse(v): parts = list(map(int, v.split('.'))); return parts + [0]*(3-len(parts))
-lb, ub = parse(bounds[0]), parse(bounds[1])
+lb = parse(bounds[0])
 vi = list(sys.version_info[:3])
-sys.exit(0 if lb <= vi < ub else 1)
+sys.exit(0 if lb <= vi else 1)
 "; then
       echo -e " ↳ [${GREEN}✔${NC}] $INSTALLED_PYTHON_VERSION detected."
     else

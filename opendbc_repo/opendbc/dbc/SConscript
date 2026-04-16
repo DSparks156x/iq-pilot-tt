@@ -2,6 +2,7 @@ import os
 from pathlib import Path
 
 env = Environment(ENV=os.environ)
+env.AppendENVPath('PYTHONPATH', os.path.dirname(os.path.dirname(os.getcwd())))
 
 generator = File("generator/generator.py")
 
