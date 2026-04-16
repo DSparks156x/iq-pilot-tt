@@ -47,6 +47,8 @@ class TogglesLayoutMici(NavWidget):
     ldw_toggle = BigParamControl("lane departure warnings", "IsLdwEnabled")
     always_on_dm_toggle = BigParamControl("always-on driver monitor", "AlwaysOnDM")
     record_front = BigParamControl("record & upload driver camera", "RecordFront", toggle_callback=restart_needed_callback)
+    pq_hca_toggle = BigParamControl("PQ HCA Status 7 Mode", "pqhca5or7Toggle")
+    lateral_when_long_unavailable = BigParamControl("Lateral When Cruise Faulted", "AllowLateralWhenLongUnavailable")
 
     self._scroller = Scroller([
       self._longitudinal_control_selector,
@@ -56,6 +58,8 @@ class TogglesLayoutMici(NavWidget):
       ldw_toggle,
       always_on_dm_toggle,
       record_front,
+      pq_hca_toggle,
+      lateral_when_long_unavailable,
     ], snap_items=False)
 
     # Toggle lists
@@ -65,6 +69,8 @@ class TogglesLayoutMici(NavWidget):
       ("AlwaysOnDM", always_on_dm_toggle),
       ("RecordFront", record_front),
       ("AolEnabled", aol_toggle),
+      ("pqhca5or7Toggle", pq_hca_toggle),
+      ("AllowLateralWhenLongUnavailable", lateral_when_long_unavailable),
     )
 
     aol_toggle.set_enabled(lambda: ui_state.is_offroad())
