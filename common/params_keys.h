@@ -211,6 +211,7 @@ inline static std::unordered_map<std::string, ParamKeyAttributes> keys = {
     {"TeslaCoopSteering", {PERSISTENT | BACKUP, BOOL, "0"}},
     {"ToyotaEnforceStockLongitudinal", {PERSISTENT | BACKUP, BOOL, "0"}},
     {"pqhca5or7Toggle", {PERSISTENT | BACKUP, BOOL}},
+    {"HcaMapTorqueController", {PERSISTENT | BACKUP, BOOL}},
     {"AllowLateralWhenLongUnavailable", {PERSISTENT | BACKUP, BOOL}},
 
     {"IQDynamicMode", {PERSISTENT | BACKUP, BOOL, "0"}},
@@ -295,6 +296,7 @@ inline static std::unordered_map<std::string, ParamKeyAttributes> keys = {
 
     // IQ.Pilot Parameters:
     {"pqhca5or7Toggle", {PERSISTENT | BACKUP, BOOL}},
+    {"HcaMapTorqueController", {PERSISTENT | BACKUP, BOOL}},
     {"AllowLateralWhenLongUnavailable", {PERSISTENT | BACKUP, BOOL}},
     {"EnableCurvatureController", {PERSISTENT | BACKUP, BOOL, "0"}},
     {"EnableSpeedLimitControl", {PERSISTENT | BACKUP, BOOL, "0"}},
