@@ -23,6 +23,23 @@ class CarInterface(CarInterfaceBase):
       safety_configs = [get_safety_config(structs.CarParams.SafetyModel.volkswagenPq)]
       ret.enableBsm = 0x3BA in fingerprint[0]  # SWA_1
 
+      if candidate == CAR.AUDI_TT_MK2:
+        try:
+          import sys, os
+          iqpilot_path = os.path.join(os.path.dirname(__file__), '..', '..', '..')
+          sys.path.insert(0, iqpilot_path)
+          from openpilot.common.params import Params
+          tt_min_steer_speed_toggle = Params().get_bool("ttMinSteerSpeedToggle")
+        except Exception:
+          tt_min_steer_speed_toggle = False
+
+        if tt_min_steer_speed_toggle:
+          from opendbc.car.common.conversions import Conversions as CV
+          ret.minSteerSpeed = 20 * CV.KPH_TO_MS
+        else:
+          from opendbc.car.volkswagen.values import CarControllerParams
+          ret.minSteerSpeed = CarControllerParams.DEFAULT_MIN_STEER_SPEED
+
       if 0x440 in fingerprint[0] or docs:  # Getriebe_1
         ret.transmissionType = TransmissionType.automatic
       else:
