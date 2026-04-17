@@ -269,6 +269,7 @@ class VolkswagenFlags(IntFlag):
   STOCK_PSD_06_PRESENT = 8192
   STOCK_DIAGNOSE_01_PRESENT = 16384
   ALT_GEAR = 32768
+  TT_DATASET_237 = 65536
 
 
 class VolkswagenFlagsIQ(IntFlag):
@@ -380,6 +381,7 @@ class CAR(Platforms):
     VolkswagenCarSpecs(mass=1469, wheelbase=2.468, steerRatio=16.9),
     chassis_codes={"8J", "FK"},
     wmis={WMI.AUDI_HUNGARY, WMI.AUDI_GERMANY_CAR},
+    flags=VolkswagenFlags.TT_DATASET_237,
   )
 
   VOLKSWAGEN_ARTEON_MK1 = VolkswagenMQBPlatformConfig(
