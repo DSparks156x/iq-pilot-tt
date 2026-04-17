@@ -13,10 +13,6 @@ DESCRIPTIONS = {
     'Use HCA Status 7 instead of Status 5 for steering control on PQ platform vehicles. '
     'This may help with compatibility on some older Volkswagen models.'
   ),
-  'ttMinSteerSpeedToggle': tr_noop(
-    'Sets the initial minimum steer speed for the Audi TT to 20 km/h. '
-    'When disabled, it will return to the default 0.4 m/s.'
-  ),
   'AllowLateralWhenLongUnavailable': tr_noop(
     'Allow lateral control (steering) to remain active even when longitudinal control (gas/brake) '
     'is temporarily unavailable due to a cruise control fault.'
@@ -36,14 +32,6 @@ class VolkswagenSettings(BrandSettings):
       enabled=lambda: not ui_state.engaged,
     )
 
-    self.tt_min_steer_speed_toggle = toggle_item(
-      lambda: tr("TT 20 km/h Min Steer Speed"),
-      description=lambda: tr(DESCRIPTIONS["ttMinSteerSpeedToggle"]),
-      initial_state=ui_state.params.get_bool("ttMinSteerSpeedToggle"),
-      callback=self._on_tt_min_steer_speed_toggle,
-      enabled=lambda: not ui_state.engaged,
-    )
-
     self.lateral_when_long_unavailable = toggle_item(
       lambda: tr("Lateral Control When Cruise Faulted"),
       description=lambda: tr(DESCRIPTIONS["AllowLateralWhenLongUnavailable"]),
@@ -52,7 +40,7 @@ class VolkswagenSettings(BrandSettings):
       enabled=lambda: not ui_state.engaged,
     )
 
-    self.items = [self.pq_hca_toggle, self.tt_min_steer_speed_toggle, self.lateral_when_long_unavailable]
+    self.items = [self.pq_hca_toggle, self.lateral_when_long_unavailable]
 
   def _is_pq(self) -> bool:
     bundle = ui_state.params.get("CarPlatformBundle")
@@ -70,14 +58,10 @@ class VolkswagenSettings(BrandSettings):
   def _on_pq_hca_toggle(self, state: bool):
     ui_state.params.put_bool("pqhca5or7Toggle", state)
 
-  def _on_tt_min_steer_speed_toggle(self, state: bool):
-    ui_state.params.put_bool("ttMinSteerSpeedToggle", state)
-
   def _on_lateral_when_long_unavailable(self, state: bool):
     ui_state.params.put_bool("AllowLateralWhenLongUnavailable", state)
 
   def update_settings(self):
     is_pq = self._is_pq()
     self.pq_hca_toggle.set_visible(is_pq)
-    self.tt_min_steer_speed_toggle.set_visible(is_pq)
     self.lateral_when_long_unavailable.set_visible(is_pq)
