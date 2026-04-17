@@ -5,7 +5,7 @@ Copyright © IQ.Lvbs, apart of Project Teal Lvbs, All Rights Reserved, licensed 
 from openpilot.iqpilot.selfdrive.controls.lib.nnlc.nnlc import NeuralNetworkLateralControl
 from openpilot.iqpilot.selfdrive.controls.lib.latcontrol_torque_ext_override import LatControlTorqueExtOverride
 from openpilot.common.params import Params
-from openpilot.common.conversions import Conversions as CV
+from opendbc.car.common.conversions import Conversions as CV
 
 try:
   from opendbc.car.volkswagen.datasets import compute_smart_hca_target_torque
