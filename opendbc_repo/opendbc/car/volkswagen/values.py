@@ -377,7 +377,7 @@ class CAR(Platforms):
 
   AUDI_TT_MK2 = VolkswagenPQPlatformConfig(
     [VWCarDocs("Audi TT 2008-14")],
-    VolkswagenCarSpecs(mass=1469, wheelbase=2.468, steerRatio=16.9, minSteerSpeed=20 * CV.KPH_TO_MS),
+    VolkswagenCarSpecs(mass=1469, wheelbase=2.468, steerRatio=16.9),
     chassis_codes={"8J", "FK"},
     wmis={WMI.AUDI_HUNGARY, WMI.AUDI_GERMANY_CAR},
   )
