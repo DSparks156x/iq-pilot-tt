@@ -35,12 +35,20 @@ class LatControlTorqueExt(NeuralNetworkFeedForward, LatControlTorqueExtOverride)
       except Exception:
         pass
 
+    if compute_smart_hca_target_torque is None:
+      print("HCA_DEBUG: compute_smart_hca_target_torque is NONE (Import Error)")
+    else:
+      print("HCA_DEBUG: bettertorquecontroller imported successfully")
+
   def _is_smart_hca_active(self):
     """Check if smart HCA remapping should be active for this vehicle."""
     if not self._smart_hca_enabled or compute_smart_hca_target_torque is None:
       return False
     tt_flag = getattr(VolkswagenFlags, 'TT_DATASET_237', None)
-    return tt_flag is not None and bool(self.CP.flags & tt_flag)
+    active = tt_flag is not None and bool(self.CP.flags & tt_flag)
+    if self._frame % 100 == 0:
+      print(f"HCA_DEBUG: smart_hca_enabled={self._smart_hca_enabled}, tt_flag_exists={tt_flag is not None}, has_flag={bool(self.CP.flags & tt_flag) if tt_flag else 'N/A'}")
+    return active
 
   def update_steer_max(self, v_ego):
     """
@@ -141,8 +149,11 @@ class LatControlTorqueExt(NeuralNetworkFeedForward, LatControlTorqueExtOverride)
     # Smart HCA remap: convert fractional torque through the inverse HCA pipeline
     # so that equal fractional authority produces equal physical motor torque at all speeds
     if self._is_smart_hca_active():
+      pre_remap = self._output_torque
       kph = car_state.vEgo * CV.MS_TO_KPH
       self._output_torque = compute_smart_hca_target_torque(
         "237", self._output_torque, kph, self._hca_baseline_torque)
+      if self._frame % 100 == 0:
+        print(f"HCA_DEBUG: REMAP ACTIVE | v_ego={kph:.1f}kph | pre={pre_remap:.4f} | post={self._output_torque:.4f} | baseline={self._hca_baseline_torque}")
 
     return self._pid_log, self._output_torque
