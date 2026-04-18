@@ -8,7 +8,7 @@ from openpilot.common.params import Params
 from opendbc.car.common.conversions import Conversions as CV
 
 try:
-  from opendbc.car.volkswagen.datasets import compute_smart_hca_target_torque
+  from openpilot.iqpilot.selfdrive.controls.lib.bettertorquecontroller import compute_smart_hca_target_torque
   from opendbc.car.volkswagen.values import VolkswagenFlags
 except ImportError:
   compute_smart_hca_target_torque = None
@@ -21,6 +21,18 @@ class LatControlTorqueExt(NeuralNetworkLateralControl, LatControlTorqueExtOverri
     self._params = Params()
     self._smart_hca_enabled = self._params.get_bool("HcaMapTorqueController")
     self._frame = 0
+    self._hca_baseline_torque = 160.0
+    
+    if compute_smart_hca_target_torque and getattr(self, 'CP', None):
+        try:
+            from opendbc.car.volkswagen.values import CAR
+            for c in CAR:
+                if c.value == self.CP.carFingerprint:
+                    if hasattr(c.config.specs, 'hcaBaselineTorque'):
+                        self._hca_baseline_torque = c.config.specs.hcaBaselineTorque
+                    break
+        except Exception:
+            pass
 
   def update(self, CS, VM, pid, params, ff, pid_log, setpoint, measurement, calibrated_pose, roll_compensation,
              desired_lateral_accel, actual_lateral_accel, lateral_accel_deadzone, gravity_adjusted_lateral_accel,
@@ -51,6 +63,6 @@ class LatControlTorqueExt(NeuralNetworkLateralControl, LatControlTorqueExtOverri
         tt_flag = getattr(VolkswagenFlags, 'TT_DATASET_237', None)
         if tt_flag and (self.CP.flags & tt_flag):
             kph = CS.vEgo * CV.MS_TO_KPH
-            self._output_torque = compute_smart_hca_target_torque("237", self._output_torque, kph)
+            self._output_torque = compute_smart_hca_target_torque("237", self._output_torque, kph, self._hca_baseline_torque)
 
     return self._pid_log, self._output_torque
