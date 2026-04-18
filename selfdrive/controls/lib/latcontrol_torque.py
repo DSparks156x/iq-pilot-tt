@@ -65,6 +65,10 @@ class LatControlTorque(LatControl):
     if self.extension.update_override_torque_params(self.torque_params):
       self.update_limits()
 
+    # Update speed-dependent authority limits from smart HCA pipeline
+    if hasattr(self.extension, 'update_steer_max') and self.extension.update_steer_max(CS.vEgo):
+      self.update_limits()
+
     pid_log = log.ControlsState.LateralTorqueState.new_message()
     pid_log.version = VERSION
     measured_curvature = -VM.calc_curvature(math.radians(CS.steeringAngleDeg - params.angleOffsetDeg), CS.vEgo, params.roll)
@@ -100,6 +104,7 @@ class LatControlTorque(LatControl):
       freeze_integrator = steer_limited_by_safety or CS.steeringPressed or CS.vEgo < 5
       output_lataccel = self.pid.update(pid_log.error, speed=CS.vEgo, feedforward=ff, freeze_integrator=freeze_integrator)
       output_torque = self.torque_from_lateral_accel(output_lataccel, self.torque_params)
+      pre_remap_torque = output_torque
 
       # Lateral acceleration torque controller extension updates
       # Overrides pid_log.error and output_torque
@@ -116,7 +121,7 @@ class LatControlTorque(LatControl):
       pid_log.actualLateralAccel = float(measurement)
       pid_log.desiredLateralAccel = float(setpoint)
       pid_log.desiredLateralJerk = float(desired_lateral_jerk)
-      pid_log.saturated = bool(self._check_saturation(self.steer_max - abs(output_torque) < 1e-3, CS, steer_limited_by_safety, curvature_limited))
+      pid_log.saturated = bool(self._check_saturation(self.steer_max - abs(pre_remap_torque) < 1e-3, CS, steer_limited_by_safety, curvature_limited))
 
     # TODO left is positive in this convention
     return -output_torque, 0.0, pid_log

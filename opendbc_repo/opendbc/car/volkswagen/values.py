@@ -340,7 +340,7 @@ class VolkswagenCarSpecs(CarSpecs):
   centerToFrontRatio: float = 0.45
   steerRatio: float = 18.4
   minSteerSpeed: float = CarControllerParams.DEFAULT_MIN_STEER_SPEED
-  hcaBaselineTorque: float = 160.0
+  hcaBaselineTorque: float = 1113.0
 
 
 class Footnote(Enum):
@@ -387,7 +387,7 @@ class CAR(Platforms):
 
   AUDI_TT_MK2 = VolkswagenPQPlatformConfig(
     [VWCarDocs("Audi TT 2008-14")],
-    VolkswagenCarSpecs(mass=1469, wheelbase=2.468, steerRatio=16.9, centerToFrontRatio=0.41, hcaBaselineTorque=160.0),
+    VolkswagenCarSpecs(mass=1469, wheelbase=2.468, steerRatio=16.9, centerToFrontRatio=0.41, hcaBaselineTorque=1113.0),
     chassis_codes={"8J", "FK"},
     wmis={WMI.AUDI_HUNGARY, WMI.AUDI_GERMANY_CAR},
     flags=VolkswagenFlags.TT_DATASET_237,
